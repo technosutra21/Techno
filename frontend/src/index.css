@@ -2,16 +2,157 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-        "Helvetica Neue", sans-serif;
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-cyberpunk-dark text-white;
+    font-family: 'Orbitron', sans-serif;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-cyberpunk-darker;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-neon-blue rounded;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-neon-pink;
+  }
 }
 
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-        monospace;
+@layer components {
+  .cyber-button {
+    @apply px-6 py-3 bg-transparent border-2 border-neon-blue text-neon-blue font-mono text-sm uppercase tracking-wider;
+    @apply hover:bg-neon-blue hover:text-cyberpunk-dark transition-all duration-300;
+    @apply focus:outline-none focus:ring-2 focus:ring-neon-blue focus:ring-opacity-50;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .cyber-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+  
+  .cyber-button:hover::before {
+    left: 100%;
+  }
+  
+  .neon-text {
+    @apply text-neon-blue;
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+  }
+  
+  .cyber-card {
+    @apply bg-cyberpunk-darker border border-neon-blue/30 rounded-lg p-6;
+    @apply shadow-lg shadow-neon-blue/10;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .cyber-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: cyber-grid;
+    background-size: grid;
+    opacity: 0.1;
+    pointer-events: none;
+  }
+  
+  .glitch {
+    position: relative;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .glitch::before {
+    animation: glitch-1 0.3s infinite;
+    color: #ff006e;
+    z-index: -1;
+  }
+  
+  .glitch::after {
+    animation: glitch-2 0.3s infinite;
+    color: #00d4ff;
+    z-index: -2;
+  }
+  
+  @keyframes glitch-1 {
+    0%, 14%, 15%, 49%, 50%, 99%, 100% {
+      transform: translate(0);
+    }
+    15%, 49% {
+      transform: translate(-2px, 0);
+    }
+  }
+  
+  @keyframes glitch-2 {
+    0%, 20%, 21%, 62%, 63%, 99%, 100% {
+      transform: translate(0);
+    }
+    21%, 62% {
+      transform: translate(2px, 0);
+    }
+  }
+}
+
+/* MapLibre custom styles */
+.maplibregl-popup {
+  font-family: 'Orbitron', sans-serif;
+}
+
+.maplibregl-popup-content {
+  @apply bg-cyberpunk-darker border border-neon-blue text-white rounded-lg;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.maplibregl-popup-close-button {
+  @apply text-neon-pink text-xl;
+}
+
+/* Model Viewer custom styles */
+model-viewer {
+  --poster-color: transparent;
+  --progress-bar-color: #00d4ff;
+  --progress-mask: rgba(10, 10, 15, 0.8);
 }
