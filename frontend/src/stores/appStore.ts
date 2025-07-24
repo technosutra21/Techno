@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import { subscribeWithSelector } from 'zustand/middleware'
 import { AppState, JourneyProgress, UserLocation, RoutePoint, ChapterData, LocationPermission, RouteType, ViewMode } from '@/types'
 import { LocationService } from '@/services/LocationService'
-import { chaptersData } from '@/data/chapters'
+import { chaptersData, originalRoute, generateCustomRoute } from '@/data/chapters'
 
 interface AppStore extends AppState {
   // Actions
@@ -13,7 +13,7 @@ interface AppStore extends AppState {
   setLocationPermission: (permission: LocationPermission) => void
   setCurrentRoute: (route: RouteType) => void
   setViewMode: (mode: ViewMode) => void
-  generateCustomRoute: (origin: [number, number], destination: [number, number]) => Promise<void>
+  createCustomRoute: (origin: {lat: number, lng: number}, destination: {lat: number, lng: number}) => void
   syncProgress: () => Promise<void>
   unlockChapter: (chapterId: number) => void
   setSelectedChapter: (chapter: ChapterData | null) => void
@@ -26,26 +26,20 @@ export const useAppStore = create<AppStore>()(
   subscribeWithSelector(
     persist(
       (set, get) => ({
-        // Initial state
+        // Initial state with correct Águas da Prata route
         currentRoute: 'original',
         currentChapter: 1,
         journeyProgress: [],
         userLocation: null,
         locationPermission: 'prompt',
-        originalRoute: chaptersData.map(chapter => ({
-          lat: chapter.location.lat,
-          lng: chapter.location.lng,
-          chapterNumber: chapter.id,
-          title: chapter.title,
-          description: chapter.description
-        })),
+        originalRoute: originalRoute, // Rota real de Águas da Prata
         customRoute: [],
         isOffline: !navigator.onLine,
         lastSyncAt: null,
         preloadedChapters: new Set(),
         isMapVisible: true,
         isModelViewerVisible: false,
-        selectedChapter: null,
+        selectedChapter: chaptersData[0], // Primeiro capítulo selecionado por padrão
         
         // Actions
         setCurrentChapter: (chapter: number) => {
@@ -114,7 +108,7 @@ export const useAppStore = create<AppStore>()(
               location.lat, location.lng,
               point.lat, point.lng
             )
-            return distance < 50 // 50 metros
+            return distance < 100 // 100 metros de proximidade
           })
           
           if (nearbyPoint && nearbyPoint.chapterNumber !== state.currentChapter) {
@@ -138,25 +132,17 @@ export const useAppStore = create<AppStore>()(
           })
         },
         
-        generateCustomRoute: async (origin, destination) => {
+        createCustomRoute: (origin: {lat: number, lng: number}, destination: {lat: number, lng: number}) => {
           try {
-            // Implementação simplificada para demo
-            // Em produção, usaria um serviço de roteamento real
-            const steps = 56
-            const latStep = (destination[0] - origin[0]) / (steps - 1)
-            const lngStep = (destination[1] - origin[1]) / (steps - 1)
-            
-            const customRoute = Array.from({ length: steps }, (_, index) => ({
-              lat: origin[0] + (latStep * index),
-              lng: origin[1] + (lngStep * index),
-              chapterNumber: index + 1
-            }))
+            const customRoute = generateCustomRoute(origin, destination)
             
             set({ 
               customRoute,
               currentRoute: 'custom',
               currentChapter: 1
             })
+            
+            console.log(`Rota customizada criada: ${origin.lat},${origin.lng} → ${destination.lat},${destination.lng}`)
           } catch (error) {
             console.error('Erro ao gerar rota customizada:', error)
             throw error
@@ -168,8 +154,7 @@ export const useAppStore = create<AppStore>()(
           if (state.isOffline) return
           
           try {
-            // Aqui você implementaria sincronização com servidor
-            // Por enquanto, apenas marca como sincronizado
+            // Implementar sincronização com servidor futuramente
             set({ lastSyncAt: new Date() })
           } catch (error) {
             console.error('Erro ao sincronizar progresso:', error)
@@ -226,14 +211,13 @@ export const useAppStore = create<AppStore>()(
             window.addEventListener('online', updateOnlineStatus)
             window.addEventListener('offline', updateOnlineStatus)
 
-            // Seleciona primeiro capítulo se nenhum estiver selecionado
+            // Garante que o primeiro capítulo está selecionado
             const state = get()
             if (!state.selectedChapter) {
-              const firstChapter = chaptersData.find(c => c.id === state.currentChapter)
-              if (firstChapter) {
-                set({ selectedChapter: firstChapter })
-              }
+              set({ selectedChapter: chaptersData[0] })
             }
+
+            console.log('✅ App inicializado com rota original de Águas da Prata, SP')
 
           } catch (error) {
             console.error('Erro ao inicializar app:', error)
@@ -268,3 +252,5 @@ export const useViewVisibility = () => useAppStore(state => ({
   isMapVisible: state.isMapVisible,
   isModelViewerVisible: state.isModelViewerVisible
 }))
+export const useOriginalRoute = () => useAppStore(state => state.originalRoute)
+export const useCustomRoute = () => useAppStore(state => state.customRoute)
