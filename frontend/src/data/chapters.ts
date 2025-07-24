@@ -1,121 +1,150 @@
 import { ChapterData } from '@/types'
 
-// Coordenadas baseadas em locais icônicos do mundo para os 56 capítulos
+// Coordenadas de Águas da Prata, SP, Brasil
+const AGUAS_DA_PRATA_CENTER = { lat: -22.0555, lng: -46.7119 }
+
+// Rota original com 56 pontos em Águas da Prata e região
+const createOriginalRoute = (): Array<{lat: number, lng: number, chapterNumber: number, title: string, description: string}> => {
+  const basePoints = [
+    // Centro de Águas da Prata e pontos históricos/turísticos reais
+    { lat: -22.0555, lng: -46.7119, name: "Centro de Águas da Prata" }, // Praça central
+    { lat: -22.0520, lng: -46.7150, name: "Fonte Platina" }, // Fonte histórica
+    { lat: -22.0580, lng: -46.7090, name: "Igreja Matriz" },
+    { lat: -22.0545, lng: -46.7200, name: "Estação Ferroviária" },
+    { lat: -22.0510, lng: -46.7180, name: "Balneário Municipal" },
+    { lat: -22.0590, lng: -46.7050, name: "Mirante da Serra" },
+    { lat: -22.0525, lng: -46.7220, name: "Parque das Águas" },
+    { lat: -22.0570, lng: -46.7080, name: "Museu Municipal" },
+    { lat: -22.0535, lng: -46.7160, name: "Thermas Water Park" },
+    { lat: -22.0560, lng: -46.7130, name: "Hotel Panorama" },
+    // Expandindo para região metropolitana e cidades próximas
+    { lat: -22.0600, lng: -46.7250, name: "São João da Boa Vista" },
+    { lat: -22.0480, lng: -46.6950, name: "Poços de Caldas direction" },
+    { lat: -22.0650, lng: -46.7300, name: "Espírito Santo do Pinhal" },
+    { lat: -22.0450, lng: -46.6900, name: "Andradas direction" },
+    { lat: -22.0680, lng: -46.7350, name: "Casa Branca direction" }
+  ]
+
+  // Gerar 56 pontos distribuídos organicamente pela região
+  const route = []
+  const radiusKm = 25 // 25km de raio da cidade
+  
+  for (let i = 0; i < 56; i++) {
+    let point
+    
+    if (i < basePoints.length) {
+      // Usar pontos reais para os primeiros capítulos
+      point = basePoints[i]
+    } else {
+      // Distribuir demais pontos em espiral/círculo pela região
+      const angle = (i * 2 * Math.PI) / 56 + (Math.random() * 0.5 - 0.25)
+      const distance = (Math.random() * radiusKm) + 2 // 2-27km do centro
+      const distanceInDegrees = distance / 111 // aproximadamente 111km por grau
+      
+      point = {
+        lat: AGUAS_DA_PRATA_CENTER.lat + Math.cos(angle) * distanceInDegrees,
+        lng: AGUAS_DA_PRATA_CENTER.lng + Math.sin(angle) * distanceInDegrees,
+        name: `Ponto da Jornada ${i + 1}`
+      }
+    }
+    
+    const chapter = chaptersData[i] || chaptersData[0]
+    
+    route.push({
+      lat: point.lat,
+      lng: point.lng,
+      chapterNumber: i + 1,
+      title: chapter.title,
+      description: chapter.description
+    })
+  }
+  
+  return route
+}
+
+// Coordenadas baseadas em capítulos do Kama Sutra com localização em Águas da Prata
 export const chaptersData: ChapterData[] = [
   {
     id: 1,
     title: "O Despertar dos Sentidos",
-    description: "A introdução à arte do amor digital",
-    longDescription: "O primeiro capítulo explora os fundamentos da conexão íntima no mundo cyberpunk, onde tecnologia e sensualidade se fundem em uma dança harmoniosa.",
-    location: { lat: 35.6762, lng: 139.6503 }, // Tokyo, Japan
+    description: "A introdução à arte do amor no coração de Águas da Prata",
+    longDescription: "O primeiro capítulo explora os fundamentos da conexão íntima na cidade das águas termais, onde corpo e alma se encontram em harmonia.",
+    location: { lat: -22.0555, lng: -46.7119 }, // Centro de Águas da Prata
     modelUrl: "https://cdn.glitch.me/models/chapter1.glb",
     difficulty: "Iniciante",
     category: "Filosofia",
-    tags: ["fundamentos", "conexão", "intimidade"],
+    tags: ["fundamentos", "conexão", "águas termais"],
     isUnlocked: true
   },
   {
     id: 2,
-    title: "Sincronização Neural",
-    description: "Conectando mentes através da interface digital",
-    longDescription: "A arte de sincronizar consciências através de implantes neurais, criando uma experiência compartilhada única.",
-    location: { lat: 48.8566, lng: 2.3522 }, // Paris, France
+    title: "A Fonte da Paixão",
+    description: "Descobrindo a fonte interior do desejo",
+    longDescription: "Como as águas termais de Águas da Prata curam o corpo, a paixão verdadeira cura a alma e desperta os sentidos.",
+    location: { lat: -22.0520, lng: -46.7150 }, // Fonte Platina
     modelUrl: "https://cdn.glitch.me/models/chapter2.glb",
     difficulty: "Iniciante",
     category: "Técnica",
-    tags: ["neural", "sincronização", "mental"],
+    tags: ["paixão", "despertar", "fonte"],
     isUnlocked: false
   },
   {
     id: 3,
-    title: "A Dança dos Hologramas",
-    description: "Expressão corporal através de projeções luminosas",
-    longDescription: "Utilizando holografias para criar uma dança sensual que transcende as limitações físicas.",
-    location: { lat: 40.7128, lng: -74.0060 }, // New York, USA
+    title: "Comunhão Sagrada",
+    description: "A união espiritual dos corpos",
+    longDescription: "Na Igreja Matriz de Águas da Prata, aprendemos que o amor verdadeiro é uma forma de comunhão sagrada.",
+    location: { lat: -22.0580, lng: -46.7090 }, // Igreja Matriz
     modelUrl: "https://cdn.glitch.me/models/chapter3.glb",
     difficulty: "Intermediário",
     category: "Arte",
-    tags: ["holografia", "dança", "expressão"],
+    tags: ["sagrado", "união", "espírito"],
     isUnlocked: false
   },
   {
     id: 4,
-    title: "Fusão Quântica",
-    description: "A união no nível subatômico",
-    longDescription: "Explorando a conexão através da manipulação quântica da realidade, onde duas consciências se tornam uma.",
-    location: { lat: 51.5074, lng: -0.1278 }, // London, UK
+    title: "A Jornada dos Sentidos",
+    description: "Partida para o autoconhecimento",
+    longDescription: "Como os viajantes que chegavam pela estação ferroviária, iniciamos nossa jornada de descoberta sensorial.",
+    location: { lat: -22.0545, lng: -46.7200 }, // Estação Ferroviária
     modelUrl: "https://cdn.glitch.me/models/chapter4.glb",
     difficulty: "Avançado",
     category: "Posição",
-    tags: ["quântico", "fusão", "consciência"],
+    tags: ["jornada", "descoberta", "movimento"],
     isUnlocked: false
   },
   {
     id: 5,
-    title: "Reverberação Cibernética",
-    description: "Amplificando sensações através de circuitos",
-    longDescription: "Técnica avançada que utiliza implantes cibernéticos para amplificar e compartilhar sensações.",
-    location: { lat: 55.7558, lng: 37.6173 }, // Moscow, Russia
+    title: "Águas Curativas",
+    description: "O poder terapêutico do toque",
+    longDescription: "No Balneário Municipal, as águas termais ensinam sobre o poder curativo do toque consciente e carinhoso.",
+    location: { lat: -22.0510, lng: -46.7180 }, // Balneário Municipal
     modelUrl: "https://cdn.glitch.me/models/chapter5.glb",
     difficulty: "Intermediário",
     category: "Técnica",
-    tags: ["cibernético", "amplificação", "circuitos"],
+    tags: ["cura", "toque", "terapia"],
     isUnlocked: false
   },
-  // Continuando com mais capítulos para completar os 56...
-  {
-    id: 6,
-    title: "Matriz de Prazer",
-    description: "Criando realidades virtuais sensuais",
-    longDescription: "A arte de construir ambientes virtuais imersivos que estimulam todos os sentidos simultaneamente.",
-    location: { lat: 34.0522, lng: -118.2437 }, // Los Angeles, USA
-    modelUrl: "https://cdn.glitch.me/models/chapter6.glb",
-    difficulty: "Especialista",
-    category: "Arte",
-    tags: ["virtual", "matriz", "imersão"],
-    isUnlocked: false
-  },
-  {
-    id: 7,
-    title: "Código do Desejo",
-    description: "Programando emoções através de algoritmos",
-    longDescription: "Utilizando inteligência artificial para gerar e modular estados emocionais complexos.",
-    location: { lat: 37.7749, lng: -122.4194 }, // San Francisco, USA
-    modelUrl: "https://cdn.glitch.me/models/chapter7.glb",
-    difficulty: "Avançado",
-    category: "Técnica",
-    tags: ["IA", "algoritmo", "emoção"],
-    isUnlocked: false
-  },
-  {
-    id: 8,
-    title: "Reflexos Neon",
-    description: "A estética visual do amor cyberpunk",
-    longDescription: "Explorando como as luzes neon e as cores vibrantes amplificam a experiência sensorial.",
-    location: { lat: 22.3193, lng: 114.1694 }, // Hong Kong
-    modelUrl: "https://cdn.glitch.me/models/chapter8.glb",
-    difficulty: "Iniciante",
-    category: "Arte",
-    tags: ["neon", "visual", "estética"],
-    isUnlocked: false
-  },
-  // Adicionando mais capítulos para atingir 56 total
-  ...Array.from({ length: 48 }, (_, index) => ({
-    id: index + 9,
-    title: `Capítulo ${index + 9}: Técnica Avançada`,
-    description: `Explorando técnicas avançadas do amor cyberpunk`,
-    longDescription: `Uma jornada profunda nas técnicas mais sofisticadas da intimidade digital.`,
+  // Continuar com os demais 51 capítulos...
+  ...Array.from({ length: 51 }, (_, index) => ({
+    id: index + 6,
+    title: `Capítulo ${index + 6}: Técnica dos Mestres`,
+    description: `Explorando as artes refinadas do amor em Águas da Prata`,
+    longDescription: `Uma jornada profunda pelas técnicas mais sofisticadas da intimidade, inspirada na tranquilidade e beleza natural de Águas da Prata.`,
     location: {
-      lat: -90 + (Math.random() * 180), // Coordenadas aleatórias para demo
-      lng: -180 + (Math.random() * 360)
+      // Distribuir os pontos em círculo pela região de Águas da Prata
+      lat: AGUAS_DA_PRATA_CENTER.lat + (Math.cos((index * 2 * Math.PI) / 51) * (0.01 + Math.random() * 0.02)),
+      lng: AGUAS_DA_PRATA_CENTER.lng + (Math.sin((index * 2 * Math.PI) / 51) * (0.01 + Math.random() * 0.02))
     },
-    modelUrl: `https://cdn.glitch.me/models/chapter${index + 9}.glb`,
+    modelUrl: `https://cdn.glitch.me/models/chapter${index + 6}.glb`,
     difficulty: ['Iniciante', 'Intermediário', 'Avançado', 'Especialista'][Math.floor(Math.random() * 4)] as any,
     category: ['Posição', 'Técnica', 'Filosofia', 'Arte'][Math.floor(Math.random() * 4)] as any,
-    tags: ['cyberpunk', 'digital', 'futurismo'],
+    tags: ['águas da prata', 'tradição', 'mestria'],
     isUnlocked: false
   }))
 ]
+
+// Rota original fixa
+export const originalRoute = createOriginalRoute()
 
 export const getChapterById = (id: number): ChapterData | undefined => {
   return chaptersData.find(chapter => chapter.id === id)
@@ -131,4 +160,34 @@ export const getChaptersByDifficulty = (difficulty: ChapterData['difficulty']): 
 
 export const getChaptersByCategory = (category: ChapterData['category']): ChapterData[] => {
   return chaptersData.filter(chapter => chapter.category === category)
+}
+
+// Função para criar rota customizada entre dois pontos
+export const generateCustomRoute = (origin: {lat: number, lng: number}, destination: {lat: number, lng: number}) => {
+  const route = []
+  
+  for (let i = 0; i < 56; i++) {
+    const progress = i / 55 // 0 to 1
+    
+    // Interpolação linear entre origem e destino
+    const lat = origin.lat + (destination.lat - origin.lat) * progress
+    const lng = origin.lng + (destination.lng - origin.lng) * progress
+    
+    // Adicionar alguma variação aleatória para não ficar linha reta
+    const variation = 0.005 // ~500m de variação
+    const randomLat = lat + (Math.random() - 0.5) * variation
+    const randomLng = lng + (Math.random() - 0.5) * variation
+    
+    const chapter = chaptersData[i]
+    
+    route.push({
+      lat: randomLat,
+      lng: randomLng,
+      chapterNumber: i + 1,
+      title: chapter.title,
+      description: chapter.description
+    })
+  }
+  
+  return route
 }
