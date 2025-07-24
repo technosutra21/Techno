@@ -138,7 +138,6 @@ function App() {
 
   const [currentView, setCurrentView] = useState<ViewMode>('gallery')
   const [isInitialized, setIsInitialized] = useState(false)
-  const [showPermissionRequest, setShowPermissionRequest] = useState(false)
 
   useEffect(() => {
     const initialize = async () => {
@@ -146,9 +145,9 @@ function App() {
         await initializeApp()
         setIsInitialized(true)
         
-        // Show permission request if needed
+        // Auto-set location permission to denied for now to skip modal
         if (locationPermission === 'prompt') {
-          setShowPermissionRequest(true)
+          setLocationPermission('denied')
         }
       } catch (error) {
         console.error('Failed to initialize app:', error)
@@ -158,11 +157,6 @@ function App() {
 
     initialize()
   }, [initializeApp, locationPermission])
-
-  const handlePermissionResponse = (granted: boolean) => {
-    setLocationPermission(granted ? 'granted' : 'denied')
-    setShowPermissionRequest(false)
-  }
 
   const handleChapterSelect = (chapter: ChapterData) => {
     console.log('Selected chapter:', chapter)
@@ -181,13 +175,6 @@ function App() {
 
   return (
     <CyberInterface>
-      {/* Permission Request Modal */}
-      <AnimatePresence>
-        {showPermissionRequest && (
-          <PermissionRequest onPermissionGranted={handlePermissionResponse} />
-        )}
-      </AnimatePresence>
-
       {/* Main Content */}
       <div className="min-h-screen pt-20 pb-32">
         <div className="max-w-7xl mx-auto p-6">
