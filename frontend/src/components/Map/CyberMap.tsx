@@ -124,9 +124,10 @@ export const CyberMap: React.FC<CyberMapProps> = ({
       'cyber-tiles': {
         type: 'raster',
         tiles: [
-          'https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGVjaG5vc3V0cmEiLCJhIjoiY2tjdjc0eDc0MGEyYzJ5bzJkc3NxdWo2eCJ9.demo'
+          'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
         ],
-        tileSize: 512
+        tileSize: 256,
+        attribution: '© OpenStreetMap contributors'
       }
     },
     layers: [
@@ -143,10 +144,11 @@ export const CyberMap: React.FC<CyberMapProps> = ({
         source: 'cyber-tiles',
         paint: {
           'raster-opacity': 0.6,
-          'raster-contrast': 0.3,
+          'raster-contrast': 0.8,
           'raster-brightness-min': 0.1,
-          'raster-brightness-max': 0.4,
-          'raster-hue-rotate': 180
+          'raster-brightness-max': 0.3,
+          'raster-hue-rotate': 180,
+          'raster-saturate': 2
         }
       }
     ]
